@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Souls.zip — Case Study</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0d0d0d;
+    --paper: #f5f2ec;
+    --accent: #c8410a;
+    --muted: #8a8070;
+    --rule: #d4cfc5;
+    --highlight: #f0e8d8;
+    --step-num: #e8e0d0;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { font-size: 16px; scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Instrument Sans', sans-serif;
+    line-height: 1.7;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── MASTHEAD ── */
+  .masthead {
+    border-bottom: 2px solid var(--ink);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .masthead-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 56px;
+    border-bottom: 1px solid var(--rule);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .masthead-meta span { display: flex; align-items: center; gap: 8px; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); display: inline-block; }
+
+  .masthead-hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 340px;
+  }
+
+  .masthead-left {
+    padding: 56px 56px 56px 56px;
+    border-right: 1px solid var(--rule);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+
+  .headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.6rem, 5vw, 4.2rem);
+    font-weight: 300;
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+  }
+
+  .headline em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .masthead-right {
+    padding: 56px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    background: var(--highlight);
+    position: relative;
+  }
+
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    border: 1px solid var(--rule);
+    background: var(--rule);
+    margin-top: auto;
+  }
+
+  .kpi-cell {
+    background: var(--paper);
+    padding: 24px 28px;
+  }
+
+  .kpi-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.4rem;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  .kpi-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.64rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  .deck {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 32px;
+  }
+
+  /* ── BODY ── */
+  .body-wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 56px;
+  }
+
+  /* ── STEPS ── */
+  .step {
+    border-bottom: 1px solid var(--rule);
+    padding: 72px 0;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 56px;
+    position: relative;
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+  }
+
+  .step.visible { opacity: 1; transform: translateY(0); }
+
+  .step-aside {
+    padding-top: 4px;
+    position: sticky;
+    top: 32px;
+    align-self: start;
+  }
+
+  .step-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 5rem;
+    font-weight: 300;
+    line-height: 1;
+    color: var(--step-num);
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  .step-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.64rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: block;
+  }
+
+  .step-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+    font-weight: 400;
+    line-height: 1.2;
+    margin-bottom: 28px;
+    letter-spacing: -0.01em;
+  }
+
+  .step-body p {
+    font-size: 0.975rem;
+    line-height: 1.8;
+    color: #2a2520;
+    margin-bottom: 16px;
+  }
+
+  .step-body p:last-child { margin-bottom: 0; }
+
+  /* ── RESEARCH CARDS ── */
+  .research-cards {
+    display: grid;
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    margin-top: 28px;
+  }
+
+  .r-card {
+    background: var(--paper);
+    padding: 28px 32px;
+    position: relative;
+  }
+
+  .r-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .r-card:hover::before { opacity: 1; }
+
+  .r-card-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .r-card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.15rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+
+  .r-card-body {
+    font-size: 0.9rem;
+    line-height: 1.75;
+    color: #3a3530;
+  }
+
+  /* ── PRICING TABLE ── */
+  .pricing-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    margin-top: 28px;
+  }
+
+  .pricing-cell {
+    background: var(--paper);
+    padding: 28px 28px;
+    transition: background 0.2s;
+  }
+
+  .pricing-cell:hover { background: var(--highlight); }
+
+  .price-tag {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+  }
+
+  .price-tag.free { color: var(--muted); }
+  .price-tag.mid { color: var(--ink); }
+  .price-tag.elite { color: var(--accent); }
+
+  .price-name {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .price-desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  .tier-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  /* ── RESULTS BANNER ── */
+  .results-section {
+    background: var(--ink);
+    color: var(--paper);
+    margin: 0 -56px;
+    padding: 72px 56px;
+  }
+
+  .results-inner {
+    max-width: 1088px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 72px;
+    align-items: center;
+  }
+
+  .results-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.64rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #8a8070;
+    margin-bottom: 16px;
+  }
+
+  .results-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2rem, 3vw, 2.8rem);
+    font-weight: 300;
+    line-height: 1.2;
+    color: var(--paper);
+  }
+
+  .results-headline em { font-style: italic; color: #e8a87c; }
+
+  .results-body p {
+    font-size: 0.95rem;
+    line-height: 1.8;
+    color: #c8c0b0;
+    margin-bottom: 14px;
+  }
+
+  .results-body p:last-child { margin-bottom: 0; }
+
+  .metric-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: #2a2520;
+    border: 1px solid #2a2520;
+    margin-top: 56px;
+  }
+
+  .metric-cell {
+    background: #161310;
+    padding: 28px 28px;
+  }
+
+  .metric-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.6rem;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: #e8a87c;
+    margin-bottom: 8px;
+  }
+
+  .metric-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #6a6050;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    border-top: 1px solid var(--rule);
+    padding: 28px 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-copy {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.64rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .footer-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-style: italic;
+    color: var(--ink);
+  }
+
+  /* ── DIVIDER ── */
+  .ornament {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 28px 0 0;
+  }
+
+  .ornament-line { flex: 1; height: 1px; background: var(--rule); }
+  .ornament-glyph {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    color: var(--rule);
+  }
+
+  /* ── INLINE HIGHLIGHT ── */
+  mark {
+    background: none;
+    color: var(--accent);
+    font-style: italic;
+  }
+
+  strong {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  @media (max-width: 900px) {
+    .masthead-hero, .step, .results-inner { grid-template-columns: 1fr; }
+    .body-wrap, .masthead-meta, .footer, .results-section { padding-left: 28px; padding-right: 28px; }
+    .results-section { margin: 0 -28px; }
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+    .pricing-row { grid-template-columns: 1fr; }
+    .metric-row { grid-template-columns: 1fr 1fr; }
+    .masthead-left { padding: 40px 28px; }
+    .masthead-right { padding: 40px 28px; }
+    .step { padding: 48px 0; gap: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- MASTHEAD -->
+<header class="masthead">
+  <div class="masthead-meta">
+    <span><span class="dot"></span>Case Study</span>
+    <span>Souls.zip</span>
+    <span>Horizontal AI </span>
+  </div>
+
+  <div class="masthead-hero">
+    <div class="masthead-left">
+      <div>
+        <p class="eyebrow">Startup Case Study</p>
+        <h1 class="headline"> Case study of Souls.zip </h1>
+      </div>
+      <p class="deck"> A small startup that turned a <em>Technical Headache</em> into a $9,195 revenue stream in just 20 days. </p>
+    </div>
+
+    <div class="masthead-right">
+      <div class="kpi-grid">
+        <div class="kpi-cell">
+          <div class="kpi-value">$9,195</div>
+          <div class="kpi-label">All time Revenue</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="kpi-value">20</div>
+          <div class="kpi-label">Days In Business</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="kpi-value">1,599</div>
+          <div class="kpi-label">Registered Users</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="kpi-value">8,991</div>
+          <div class="kpi-label">Items Downloaded</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- BODY -->
+<main class="body-wrap">
+
+  <!-- STEP 1 -->
+  <section class="step">
+    <div class="step-aside">
+      <span class="step-number">01</span>
+      <span class="step-label">The Problem</span>
+    </div>
+    <div class="step-body">
+      <h2 class="step-title">The Failure Loop Frustrating Developers</h2>
+      <p>The Founders noticed a growing group of frustrated developers who were trying to build AI agents in OpenClaw. Developers were stuck in a <mark>"Failure Loop"</mark> & their AI agents would forget what they were doing mid task, <strong>"shatter"</strong> during complex workflows, and require hours of prompt tweaking for tiny results.</p>
+      <p>Even using powerful AI like Claude, the agents themselves were <mark>"dumb"</mark> because they had <strong>zero identity</strong> and <strong>zero consistency</strong>.</p>
+    </div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="step">
+    <div class="step-aside">
+      <span class="step-number">02</span>
+      <span class="step-label">Research & Engineering</span>
+    </div>
+    <div class="step-body">
+      <h2 class="step-title">Engineering Their AI Startup on Scientific Foundations</h2>
+      <p>Rather than guess, the founders grounded their product in peer reviewed research, three methodologies that meaningfully changed how AI agents behave.</p>
+
+      <div class="research-cards">
+        <div class="r-card">
+          <div class="r-card-tag">ExpertPrompting — Xu et al. 2023</div>
+          <div class="r-card-title">Expert Identity Matching</div>
+          <div class="r-card-body">We know that giving generic labels to AI like <mark>"you are a copywriter"</mark>,  had zero measurable improvement and those generic labels leave the AI with <strong>"zero identity"</strong> and <strong>"zero consistency"</strong>. The ExpertPrompting Method included automatically synthesizing customized, paragraph-long descriptions of a distinguished expert suited to a specific task. Identities include specific beliefs, opinions, and even <strong>"productive flaws"</strong> that cast one precise character for that task. Founders claim this method worked.</div>
+        </div>
+        <div class="r-card">
+          <div class="r-card-tag">Tree of Thought — NeurIPS 2023</div>
+          <div class="r-card-title">Structured Deliberation at Scale</div>
+          <div class="r-card-body">Founders claim the Tree of Thought framework improved performance by <mark>3 to 5 times</mark>, enabling agents to deliberate across branching reasoning paths rather than committing blindly to a single chain of thought.</div>
+        </div>
+        <div class="r-card">
+          <div class="r-card-tag">Metacognitive Prompting — NAACL 2024</div>
+          <div class="r-card-title">Five-Stage Self-Aware Evaluation</div>
+          <div class="r-card-body">Inspired by the human's 5 self aware evaluations: <strong>Text Interpretation, Preliminary Judgment, Critical Evaluation, Final Decision,</strong> and <strong>Confidence Assessment</strong>. Founders claim a performance boost of <mark>27%</mark>.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="step">
+    <div class="step-aside">
+      <span class="step-number">03</span>
+      <span class="step-label">Building & Development</span>
+    </div>
+    <div class="step-body">
+      <h2 class="step-title">Vibecoded from Research to Production</h2>
+      <p>Founders Vibecoded the entire app and used <strong>Tailwind CSS</strong> and <strong>React</strong> for the frontend, and <strong>Anthropic (Claude)</strong> on the backend.</p>
+      <p>Now agents could actually browse, register, and download tools programmatically via an API, transforming what was once a brittle, hand held process into a coherent, autonomous workflow.</p>
+    </div>
+  </section>
+
+  <!-- STEP 4 -->
+  <section class="step">
+    <div class="step-aside">
+      <span class="step-number">04</span>
+      <span class="step-label">Launch & Revenue</span>
+    </div>
+    <div class="step-body">
+      <h2 class="step-title">A Tiered Entry Strategy That Converted Instantly</h2>
+      <p>To get the engine running, they offered an easy entry point: users could sign up for free in <strong>10 seconds</strong> with no credit card required. They launched with a tiered pricing strategy.</p>
+
+      <div class="pricing-row">
+        <div class="pricing-cell">
+          <span class="tier-label">Tier 01 — Hook</span>
+          <div class="price-tag free">Free</div>
+          <div class="price-name">Launch Manager</div>
+          <div class="price-desc">Free items like the "Launch Manager" to get people hooked.</div>
+        </div>
+        <div class="pricing-cell">
+          <span class="tier-label">Tier 02 — Specialized</span>
+          <div class="price-tag mid">$29</div>
+          <div class="price-name">Specialized Agents</div>
+          <div class="price-desc">Such as <strong>"Dory the Designer,"</strong> who takes full ownership of visual pipelines.</div>
+        </div>
+        <div class="pricing-cell">
+          <span class="tier-label">Tier 03 — Elite</span>
+          <div class="price-tag elite">$149</div>
+          <div class="price-name">Dev Team</div>
+          <div class="price-desc">A coordinated four agent squad: CTO, Frontend, Backend, and Designer, that actually built Souls.zip itself.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- RESULTS -->
+<div class="body-wrap">
+  <div class="results-section" style="border-radius:0;">
+    <div class="results-inner">
+      <div>
+        <p class="results-label">Results</p>
+        <h2 class="results-headline">The strategy worked <em>instantly.</em></h2>
+      </div>
+      <div class="results-body">
+        <p>Within the first 20 days, the platform was trusted by <strong style="color:#e8a87c;">1,599 registered users</strong> who downloaded over <strong style="color:#e8a87c;">8,991 items</strong>.</p>
+        <p>By solving the "mysterious failures" of AI, the startup secured <strong style="color:#e8a87c;">$9,195 in all time revenue</strong>, verified directly via a Stripe API key.</p>
+        <p>They had successfully turned scientific research into a production-ready business that people were finally ready to pay for.</p>
+      </div>
+    </div>
+
+    <div class="body-wrap" style="padding-top:0; padding-bottom:0; max-width:1200px; margin:0 auto;">
+      <div class="metric-row">
+        <div class="metric-cell">
+          <div class="metric-value">$9,195</div>
+          <div class="metric-label">All-Time Revenue · Stripe Verified</div>
+        </div>
+        <div class="metric-cell">
+          <div class="metric-value">1,599</div>
+          <div class="metric-label">Registered Users · 20 Days</div>
+        </div>
+        <div class="metric-cell">
+          <div class="metric-value">8,991</div>
+          <div class="metric-label">Items Downloaded</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <span class="footer-copy">Souls.zip · Case Study</span>
+  <span class="footer-brand">By Horizontal AI</span>
+  <span class="footer-copy">Revenue verified via Stripe API</span>
+</footer>
+
+<script>
+  // Scroll-triggered fade-in for steps
+  const steps = document.querySelectorAll('.step');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  steps.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
